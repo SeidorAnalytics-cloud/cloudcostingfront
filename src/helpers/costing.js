@@ -19,3 +19,16 @@ export const setCredentials = async(body) =>{
     const respJson =  resp.json()
     return respJson
 }
+
+export const updateCredentials = async(body) =>{
+    const resp = await fetchBackend('aws/updatecredentials',body , 'POST')
+    const respJson =  resp.json()
+    return respJson
+}
+
+
+export const getDataDashbords = async(body) =>{
+    const resp = await fetchBackend('aws/getyearlydata',body, 'POST')
+    const respJson =  resp.json()
+    return respJson
+}

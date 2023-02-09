@@ -11,7 +11,8 @@ const initialState = {
     credentialToChange:{
         index:null,
         state:false
-    }
+    },
+    dataDashbord:{}
     
 }
 
@@ -69,14 +70,15 @@ export const costingSlice= createSlice({
                 secretAccessKey : payload.secretAccessKey,
             }
             state.cardUsageAccount[payload.index]=body
-
+        },
+        getDataDashbord: (state,{payload})=>{
+            state.dataDashbord=payload.data
             
         }
-
 
         
     }
 })
 
 
-export const {updatecardUsageAccount,editCredentials,updateStateFalseModalCredencialesSave,updateStateTrueModalCredencialesSave,processingRequest,getAwsUsage,updateProvider,updateStateCredentials,readyRequest,resetSateCredentials,updatealertCredentialsInvalidTrue,updatealertCredentialsInvalidFalse} = costingSlice.actions
+export const {getDataDashbord,updatecardUsageAccount,editCredentials,updateStateFalseModalCredencialesSave,updateStateTrueModalCredencialesSave,processingRequest,getAwsUsage,updateProvider,updateStateCredentials,readyRequest,resetSateCredentials,updatealertCredentialsInvalidTrue,updatealertCredentialsInvalidFalse} = costingSlice.actions

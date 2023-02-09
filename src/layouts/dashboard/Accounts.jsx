@@ -4,7 +4,7 @@ import {Form,Button,Spinner,Alert,Modal} from 'react-bootstrap'
 import Card from "../../components/Card"
 import { useSelector,useDispatch } from 'react-redux';
 import { updateProvider,resetSateCredentials,updateStateFalseModalCredencialesSave,updatecardUsageAccount } from "../../store/slices/costing/costingSlice";
-import { testConnection,setNewCredentials } from "../../store/slices/costing/costingThunks";
+import { testConnection,setNewCredentials,updateCredentials } from "../../store/slices/costing/costingThunks";
 
 
 
@@ -55,8 +55,8 @@ const Accounts = ()=>{
 
 
 
-
-    const handleUpdate = () => {
+//ver como hacer de que el estado se actualize antes de enviarlo
+    const handleUpdate =async  () => {
         let cloudProviderElement = document.getElementById('cloudProviderSelect').value
 
         if(cloudProviderElement==='AWS'){
@@ -69,10 +69,19 @@ const Accounts = ()=>{
             }
 
             //esto cuando llegue el momento hay que pasarle el id del tenant, por ahora solo harcodeado
-            dispatch( updatecardUsageAccount(body) )
+            dispatch(updatecardUsageAccount(body))
+           
+            
+           
+            // dispatch( updateCredentials(cardUsageAccount) )
             // dispatch( setNewCredentials(bodyJson) )
             // handleCancel()
         }
+    }
+
+    const pruebaFuncion = ()=>{
+
+        dispatch( updateCredentials(cardUsageAccount) )
     }
 
 

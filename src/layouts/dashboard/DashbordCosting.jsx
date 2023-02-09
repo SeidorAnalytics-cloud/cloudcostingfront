@@ -1,10 +1,11 @@
 import React, {useEffect} from 'react'
-import { Row,Col,Dropdown,Button} from 'react-bootstrap'
+import { Row,Col,Dropdown,Button,Alert} from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 
 import {bindActionCreators} from "redux"
 //circular
 import Circularprogressbar from '../../components/circularprogressbar.js'
+
 
 // AOS
 import AOS from 'aos'
@@ -35,6 +36,9 @@ import CountUp from 'react-countup';
 // store
 import {NavbarstyleAction, getDirMode, getcustomizerMode, getcustomizerprimaryMode,  getcustomizerinfoMode,  SchemeDirAction, ColorCustomizerAction,  getNavbarStyleMode, getSidebarActiveMode, SidebarActiveStyleAction, getDarkMode, ModeAction,  SidebarColorAction, getSidebarColorMode, getSidebarTypeMode} from '../../store/setting/setting'
 import {connect} from "react-redux"
+import { useSelector,useDispatch } from 'react-redux'
+
+import { getDataforDashbords } from '../../store/slices/costing/costingThunks.js'
 
   
 // install Swiper modules
@@ -66,6 +70,7 @@ const mapDispatchToProps = dispatch => ({
         dispatch
     )
 })
+
 
 
 
@@ -208,125 +213,153 @@ const DashbordCosting = (props)=>{
                 },
                 series: [55, 75],
             }
-            const chart3={
-                options : {
-                    chart: {
+
+
+            const {dataDashbord} = useSelector( state => state.costing )
+            const dispatch = useDispatch();
+            
+            useEffect(() => {
+                const body={
+                    "tenantId":1
+                }
+
+                dispatch(getDataforDashbords(body))
+
+                
+             
+            },[])
+
+        
+    
+              
+    
+              
+             let prueba=dataDashbord.data || [];
+              console.log(dataDashbord.lastUpdate)
+              
+              let chart3 = {
+                options: {
+                  chart: {
                     stacked: true,
+                    zoom: {
+                        type: 'x',
+                        enabled: true
+                        },
                     toolbar: {
-                        show:false
-                        }
-                    },
-                    colors: [props.colorprimarymode, props.cololrinfomode],
-                    plotOptions: {
+                      show: true
+                    }
+                  },
+                //   colors: [props.colorprimarymode, props.cololrinfomode],
+                colors: ['#03a9f4', '#80d8ff', '#00bcd4', '#00acc1', '#008c9e', '#00796b', '#004d40', '#2e7d32', '#558b2f', '#9e9d24', '#f9a825', '#ff8f00', '#ef6c00'],
+                plotOptions: {
                     bar: {
-                        horizontal: false,
-                        columnWidth: '28%',
-                        endingShape: 'rounded',
-                        borderRadius: 5,
+                      horizontal: false,
+                      columnWidth: '28%',
+                      endingShape: 'flat',
+                      borderRadius: 5,
+                      
                     },
-                    },
-                    legend: {
+                  },
+                  legend: {
                     show: false
-                    },
-                    dataLabels: {
+                  },
+                  dataLabels: {
                     enabled: false
-                    },
-                    stroke: {
+                  },
+                  stroke: {
                     show: true,
                     width: 2,
                     colors: ['transparent']
-                    },
-                    xaxis: {
-                    categories: ['S', 'M', 'T', 'W', 'T', 'F', 'S', 'M', 'T', 'W'],
+                  },
+                  xaxis: {
+                    categories: ['2022-02', '2022-03', '2022-04', '2022-05', '2022-06', '2022-07', '2022-08', '2022-09', '2022-10', '2022-11', '2022-12', '2023-01', '2023-02'],
                     labels: {
-                        minHeight:20,
-                        maxHeight:20,
-                        style: {
+                      minHeight: 20,
+                      maxHeight: 20,
+                      style: {
                         colors: "#8A92A6",
-                        },
+                      },
                     }
-                    },
-                    yaxis: {
-                    title: {
-                        text: ''
-                    },
+                  },
+                  yaxis: {
+                    tickAmount: 8,
                     labels: {
-                        minWidth: 19,
-                        maxWidth: 19,
-                        style: {
-                            colors: "#8A92A6",
-                        },
-                    }
+                      show: true,
+                      style: {
+                        colors: "#a68a90",
+                      },
+                      formatter: function(val) {
+                        return Math.round(val);
+                      },
                     },
-                    fill: {
+                    min: 0,
+                    max: 4000
+                  }
+                  
+                ,
+                  fill: {
                     opacity: 1
-                    },
-                    tooltip: {
+                  },
+                  tooltip: {
                     y: {
-                        formatter: function (val) {
-                        return "$ " + val + " thousands"
-                        }
+                      formatter: function (val) {
+                        return "$ " + val
+                      }
                     }
-                    }
+                  }
                 },
-                series: [{
-                    name: 'Successful deals',
-                    data: [30, 50, 35, 60, 40, 60, 60, 30, 50, 35,]
-                }, {
-                    name: 'Failed deals',
-                    data: [40, 50, 55, 50, 30, 80, 30, 40, 50, 100]
-                }]
-            }
+                series: prueba
+              };
+              
 
-
+            
+            
+        
+           
+           
+            
 
 
     return(
         <>
                     {/* <Col md="12" lg="8"> */}
                         <Row>
-                            <Col md="12">
-                                <div className="card" data-aos="fade-up" data-aos-delay="800">
+                        <Col md="12" >
+
+                        <Col md="12" xl="4">
+                        <Alert variant="primary d-flex align-items-center" role="alert">
+                            <svg className="me-2" id="info-fill" fill="currentColor" width="20" viewBox="0 0 16 16">
+                                <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"></path>
+                            </svg>
+                            <div>
+                            The last query was made {dataDashbord.lastUpdate}
+                            </div>
+                        </Alert>
+                        </Col>
+                                <div className="card" data-aos="fade-up" data-aos-delay="1000">
+                               
                                     <div className="flex-wrap card-header d-flex justify-content-between">
                                         <div className="header-title">
-                                            <h4 className="card-title">$855.8K</h4>
-                                            <p className="mb-0">Usage</p>          
-                                        </div>
-                                        <div className="d-flex align-items-center align-self-center">
-                                            <div className="d-flex align-items-center text-primary">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="12" viewBox="0 0 24 24" fill="currentColor">
-                                                    <g>
-                                                        <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
-                                                    </g>
-                                                </svg>
-                                                <div className="ms-2">
-                                                <span className="text-secondary">AWS</span>
-                                                </div>
-                                            </div>
-                                            <div className="d-flex align-items-center ms-3 text-info">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="12" viewBox="0 0 24 24" fill="currentColor">
-                                                    <g>
-                                                        <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
-                                                    </g>
-                                                </svg>
-                                                <div className="ms-2">
-                                                    <span className="text-secondary">Azure</span>
-                                                </div>
-                                            </div>
+                                            <h4 className="card-title">Conversions</h4>     
+                                                
                                         </div>
                                         <Dropdown>
-                                            <Dropdown.Toggle as={Button} href="#" variant=" text-secondary dropdown-toggle" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <Dropdown.Toggle as={Button} href="#" variant=" text-secondary" id="dropdownMenuButton3" aria-expanded="false">
                                                 This Week
                                             </Dropdown.Toggle>
-                                            <Dropdown.Menu className="dropdown-menu-end" aria-labelledby="dropdownMenuButton2">
-                                                <li><Dropdown.Item href="#">This Week</Dropdown.Item></li>
+                                            <Dropdown.Menu className="dropdown-menu-end" aria-labelledby="dropdownMenuButton3">
+                                                <li><Dropdown.Item  href="#">Now</Dropdown.Item></li>
                                                 <li><Dropdown.Item href="#">This Month</Dropdown.Item></li>
                                                 <li><Dropdown.Item href="#">This Year</Dropdown.Item></li>
                                             </Dropdown.Menu>
                                         </Dropdown>
                                     </div>
                                     <div className="card-body">
-                                        <Chart  options={chart1.options} series={chart1.series} type="area"   height="245"  />
+                                        {!dataDashbord?
+                                        <div>Cargando datos...</div>
+                                        :
+                                        <Chart className="d-activity" options={chart3.options} series={chart3.series} type="bar"   height="230"  />
+                                        }
                                     </div>
                                 </div>
                             </Col>
@@ -378,17 +411,40 @@ const DashbordCosting = (props)=>{
                                     </div>
                                 </div>
                             </Col>
-                            <Col md="12" xl="6">
-                                <div className="card" data-aos="fade-up" data-aos-delay="1000">
+                            <Col  md="12" xl="6">
+                                <div className="card" data-aos="fade-up" data-aos-delay="800">
                                     <div className="flex-wrap card-header d-flex justify-content-between">
                                         <div className="header-title">
-                                            <h4 className="card-title">Conversions</h4>            
+                                            <h4 className="card-title">$855.8K</h4>
+                                            <p className="mb-0">Usage</p>          
+                                        </div>
+                                        <div className="d-flex align-items-center align-self-center">
+                                            <div className="d-flex align-items-center text-primary">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="12" viewBox="0 0 24 24" fill="currentColor">
+                                                    <g>
+                                                        <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
+                                                    </g>
+                                                </svg>
+                                                <div className="ms-2">
+                                                <span className="text-secondary">AWS</span>
+                                                </div>
+                                            </div>
+                                            <div className="d-flex align-items-center ms-3 text-info">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="12" viewBox="0 0 24 24" fill="currentColor">
+                                                    <g>
+                                                        <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
+                                                    </g>
+                                                </svg>
+                                                <div className="ms-2">
+                                                    <span className="text-secondary">Azure</span>
+                                                </div>
+                                            </div>
                                         </div>
                                         <Dropdown>
-                                            <Dropdown.Toggle as={Button} href="#" variant=" text-secondary" id="dropdownMenuButton3" aria-expanded="false">
+                                            <Dropdown.Toggle as={Button} href="#" variant=" text-secondary dropdown-toggle" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
                                                 This Week
                                             </Dropdown.Toggle>
-                                            <Dropdown.Menu className="dropdown-menu-end" aria-labelledby="dropdownMenuButton3">
+                                            <Dropdown.Menu className="dropdown-menu-end" aria-labelledby="dropdownMenuButton2">
                                                 <li><Dropdown.Item href="#">This Week</Dropdown.Item></li>
                                                 <li><Dropdown.Item href="#">This Month</Dropdown.Item></li>
                                                 <li><Dropdown.Item href="#">This Year</Dropdown.Item></li>
@@ -396,10 +452,11 @@ const DashbordCosting = (props)=>{
                                         </Dropdown>
                                     </div>
                                     <div className="card-body">
-                                        <Chart className="d-activity" options={chart3.options} series={chart3.series} type="bar"   height="230"  />
+                                        <Chart  options={chart1.options} series={chart1.series} type="area"   height="245"  />
                                     </div>
                                 </div>
                             </Col>
+                           
                         </Row>
                     {/* </Col>         */}
                 </>
