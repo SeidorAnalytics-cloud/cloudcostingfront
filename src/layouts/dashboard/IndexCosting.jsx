@@ -83,8 +83,7 @@ const Principal = (props)=>{
 
     const {cardUsageAccount,credentialToChange} = useSelector( state => state.costing )
     
-    // console.log(credentialToChange)
-
+    
 
     useEffect(() => {
         AOS.init({
@@ -116,14 +115,12 @@ const Principal = (props)=>{
         }
 
         
-       
-        
-        
         },[])
+
 
         useEffect(()=>{
             const body = {
-                "tenantid":2
+                "tenantId":1
             }
 
             dispatch( getUsageFromThisMonthAndLast(body) )
@@ -137,7 +134,7 @@ const Principal = (props)=>{
             dispatch( editCredentials(index) )
         }
 
-
+        
 
 
     return(

@@ -167,7 +167,7 @@ const Accounts = ()=>{
             dispatch(updateStateFalseModalCredencialesSave())
         }
         
-        // console.log(status,credentialToChange.index,credentialToChange.state)
+        console.log(status,credentialToChange.index,credentialToChange.state)
         
 
     return (

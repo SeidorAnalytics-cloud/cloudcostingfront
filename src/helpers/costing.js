@@ -32,3 +32,9 @@ export const getDataDashbords = async(body) =>{
     const respJson =  resp.json()
     return respJson
 }
+
+export const updateDataDashbordsFetch = async(body) =>{
+    const resp = await fetchBackend('aws/setyearlycost',body, 'POST')
+    const respJson =  resp.json()
+    return respJson
+}

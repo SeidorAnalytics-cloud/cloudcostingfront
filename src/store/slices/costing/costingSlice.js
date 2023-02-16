@@ -73,12 +73,14 @@ export const costingSlice= createSlice({
         },
         getDataDashbord: (state,{payload})=>{
             state.dataDashbord=payload.data
-            
-        }
+        },
+        clearDataDashbord: (state)=>{
+            state.dataDashbord={}
+        },
 
         
     }
 })
 
 
-export const {getDataDashbord,updatecardUsageAccount,editCredentials,updateStateFalseModalCredencialesSave,updateStateTrueModalCredencialesSave,processingRequest,getAwsUsage,updateProvider,updateStateCredentials,readyRequest,resetSateCredentials,updatealertCredentialsInvalidTrue,updatealertCredentialsInvalidFalse} = costingSlice.actions
+export const {clearDataDashbord,getDataDashbord,updatecardUsageAccount,editCredentials,updateStateFalseModalCredencialesSave,updateStateTrueModalCredencialesSave,processingRequest,getAwsUsage,updateProvider,updateStateCredentials,readyRequest,resetSateCredentials,updatealertCredentialsInvalidTrue,updatealertCredentialsInvalidFalse} = costingSlice.actions

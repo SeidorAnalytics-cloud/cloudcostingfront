@@ -1,5 +1,5 @@
-import { processingRequest,getAwsUsage,updateStateCredentials,readyRequest,updatealertCredentialsInvalidTrue,updatealertCredentialsInvalidFalse,updateStateTrueModalCredencialesSave,getDataDashbord } from "./costingSlice"
-import { getAwsResults,getConnection,setCredentials,getDataDashbords } from "../../../helpers/costing"
+import { clearDataDashbord,processingRequest,getAwsUsage,updateStateCredentials,readyRequest,updatealertCredentialsInvalidTrue,updatealertCredentialsInvalidFalse,updateStateTrueModalCredencialesSave,getDataDashbord } from "./costingSlice"
+import { getAwsResults,getConnection,setCredentials,getDataDashbords,updateDataDashbordsFetch } from "../../../helpers/costing"
 
 //tengo que seguir armando la llamada al back para que llamen a esta funcion desde los componentes y agregar aca todos los dispatch
 
@@ -24,6 +24,7 @@ export const testConnection = (body)=>{
         if(respJson.status ==='true'){
             dispatch(updateStateCredentials())
             dispatch(updatealertCredentialsInvalidTrue())
+            dispatch(readyRequest())
         }else{
             dispatch(readyRequest())
             dispatch(updatealertCredentialsInvalidFalse())
@@ -36,9 +37,12 @@ export const setNewCredentials = (body)=>{
     return async( dispatch ) => {
         
         dispatch( processingRequest() )
+        console.log(body)
         const respJson = await setCredentials(body)
         if(respJson.status === 'true'){
+
             dispatch(updateStateTrueModalCredencialesSave())
+            dispatch(readyRequest())
         }
         else{
             
@@ -72,13 +76,35 @@ export const updateCredentials = (body)=>{
     }
 }
 
-
+//trae la data desde la db y la carga en el initalState
 export const getDataforDashbords = (body)=>{
     return async( dispatch ) => {
         
         dispatch( processingRequest() )
         const respJson = await getDataDashbords(body)
         dispatch(getDataDashbord(respJson))
+        dispatch(readyRequest())
+    }
+}
+
+//esto solo hace un evio cuando se quiere recargar la inforamcion desde a aws a la db
+export const updateDataforDashbords = (body)=>{
+    return async( dispatch ) => {
+        
+        dispatch( processingRequest() )
+        
+        const respJson = await updateDataDashbordsFetch(body)
+        if(respJson.status === 'true'){
+            dispatch(clearDataDashbord())
+            console.log('true')
+            const respJson = await getDataDashbords(body)
+            dispatch(getDataDashbord(respJson))
+            dispatch(readyRequest())
+        }
+        else{
+            
+            console.log('nada')
+        }
         
       
     }
