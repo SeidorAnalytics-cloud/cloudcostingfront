@@ -38,3 +38,18 @@ export const updateDataDashbordsFetch = async(body) =>{
     const respJson =  resp.json()
     return respJson
 }
+
+
+export const getDataDistributionFetch = async(body) =>{
+    const resp = await fetchBackend('aws/getdistribution',body, 'POST')
+    const respJson =  resp.json()
+    return respJson
+}
+
+
+export const setDataDistributionFetch = async(body) =>{
+    const resp = await fetchBackend('aws/setdistributionresults',body, 'POST')
+    const respJson =  resp.json()
+    return respJson
+}
+

@@ -1,5 +1,5 @@
-import { clearDataDashbord,processingRequest,getAwsUsage,updateStateCredentials,readyRequest,updatealertCredentialsInvalidTrue,updatealertCredentialsInvalidFalse,updateStateTrueModalCredencialesSave,getDataDashbord } from "./costingSlice"
-import { getAwsResults,getConnection,setCredentials,getDataDashbords,updateDataDashbordsFetch } from "../../../helpers/costing"
+import { clearDataDashbord,processingRequest,getAwsUsage,updateStateCredentials,readyRequest,updatealertCredentialsInvalidTrue,updatealertCredentialsInvalidFalse,updateStateTrueModalCredencialesSave,getDataDashbord,clearDataDistribution,getDataDistrbution } from "./costingSlice"
+import { getAwsResults,getConnection,setCredentials,getDataDashbords,updateDataDashbordsFetch,getDataDistributionFetch,setDataDistributionFetch } from "../../../helpers/costing"
 
 //tengo que seguir armando la llamada al back para que llamen a esta funcion desde los componentes y agregar aca todos los dispatch
 
@@ -105,7 +105,47 @@ export const updateDataforDashbords = (body)=>{
             
             console.log('nada')
         }
+    }
+}
+
+
+export const getDataforDistribution = (body)=>{
+    return async( dispatch ) => {
         
-      
+        dispatch( processingRequest() )
+        
+        const respJson = await getDataDistributionFetch(body)
+        if(respJson.status === 'true'){
+            dispatch(clearDataDistribution())
+            console.log('true')
+            const respJson = await getDataDistributionFetch(body)
+            dispatch(getDataDistrbution(respJson))
+            dispatch(readyRequest())
+        }
+        else{
+            
+            console.log('nada')
+        }
+    }
+}
+
+
+export const setDataforDistribution = (body)=>{
+    return async( dispatch ) => {
+        
+        dispatch( processingRequest() )
+        
+        const respJson = await setDataDistributionFetch(body)
+        if(respJson.status === 'true'){
+            dispatch(clearDataDistribution())
+            console.log('true')
+            const respJson = await getDataDistributionFetch(body)
+            dispatch(getDataDistrbution(respJson))
+            dispatch(readyRequest())
+        }
+        else{
+            
+            console.log('nada')
+        }
     }
 }

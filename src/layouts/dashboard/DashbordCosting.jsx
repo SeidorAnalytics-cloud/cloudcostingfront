@@ -253,15 +253,6 @@ const DashbordCosting = (props)=>{
             //funcion  que ve de hacer la actualazacion de datos que va a buscar a la bd 
 
             const [shouldUpdate, setShouldUpdate] = useState(false);
-
-            // useEffect(() => {
-            //   if (shouldUpdate) {
-                
-        
-            
-            //     setShouldUpdate(false);
-            //   }
-            // }, []);
             
 
 

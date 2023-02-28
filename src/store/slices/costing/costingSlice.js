@@ -12,7 +12,8 @@ const initialState = {
         index:null,
         state:false
     },
-    dataDashbord:{}
+    dataDashbord:{},
+    dataDistribution:{},
     
 }
 
@@ -77,10 +78,16 @@ export const costingSlice= createSlice({
         clearDataDashbord: (state)=>{
             state.dataDashbord={}
         },
+        getDataDistrbution:(state,{payload})=>{
+            state.dataDistribution=payload.data
+        },
+        clearDataDistribution: (state)=>{
+            state.dataDistribution={}
+        },
 
         
     }
 })
 
 
-export const {clearDataDashbord,getDataDashbord,updatecardUsageAccount,editCredentials,updateStateFalseModalCredencialesSave,updateStateTrueModalCredencialesSave,processingRequest,getAwsUsage,updateProvider,updateStateCredentials,readyRequest,resetSateCredentials,updatealertCredentialsInvalidTrue,updatealertCredentialsInvalidFalse} = costingSlice.actions
+export const {clearDataDistribution,getDataDistrbution,clearDataDashbord,getDataDashbord,updatecardUsageAccount,editCredentials,updateStateFalseModalCredencialesSave,updateStateTrueModalCredencialesSave,processingRequest,getAwsUsage,updateProvider,updateStateCredentials,readyRequest,resetSateCredentials,updatealertCredentialsInvalidTrue,updatealertCredentialsInvalidFalse} = costingSlice.actions

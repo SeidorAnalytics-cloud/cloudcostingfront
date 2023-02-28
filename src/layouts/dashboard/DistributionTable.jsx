@@ -6,13 +6,14 @@ import { useSelector,useDispatch } from 'react-redux'
 
 
 
+
 import {bindActionCreators } from "redux"
 //circular
 
 // AOS
-import AOS from 'aos'
-import '../../../node_modules/aos/dist/aos'
-import '../../../node_modules/aos/dist/aos.css'
+// import AOS from 'aos'
+// import '../../../node_modules/aos/dist/aos'
+// import '../../../node_modules/aos/dist/aos.css'
 
 
 
@@ -21,10 +22,16 @@ import '@inovua/reactdatagrid-community/index.css'
 
 
 
+import { getDataforDistribution,setDataforDistribution } from '../../store/slices/costing/costingThunks.js'
+
+
+
+
 // store
 import {NavbarstyleAction, getDirMode, getcustomizerMode, getcustomizerprimaryMode,  getcustomizerinfoMode,  SchemeDirAction, ColorCustomizerAction,  getNavbarStyleMode, getSidebarActiveMode, SidebarActiveStyleAction, getDarkMode, ModeAction,  SidebarColorAction, getSidebarColorMode, getSidebarTypeMode} from '../../store/setting/setting'
 import {connect} from "react-redux"
 
+const moment = require('moment');
 
 
 const mapStateToProps = (state) => {
@@ -57,71 +64,155 @@ const mapDispatchToProps = dispatch => ({
 
 
 
-const columns = [
-    { name: 'service', header: 'Service', minWidth: 50, defaultFlex: 2 },
-    { name: 'cost', header: 'Cost', maxWidth: 1000, defaultFlex: 1,type: 'number' }
-  ]
+
+
   
-  const gridStyle = { minHeight: 550 }
+
+  let dataSourceExample=[]
 
 
 
+const DistributionTable = ()=>{
 
 
-const DistributionTable = (props)=>{
+  const [height, setHeight] = useState(500);
+  useEffect(() => {
+    const handleResize = () => {
+      const windowHeight = window.innerHeight;
+      const headerHeight = document.querySelector('.card-header').offsetHeight;
+      const minHeight = 500;
+      const maxHeight = windowHeight - headerHeight - 200;
+      setHeight(Math.min(maxHeight, Math.max(minHeight, windowHeight - headerHeight - 200)));
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);    
 
 
-        // const gridStyle = { minHeight: 550 };
-
-        // const columns = [
-        //   { name: 'id', header: 'Id', defaultVisible: false, minWidth: 300, type: 'number' },
-        //   { name: 'name', header: 'Name', defaultFlex: 1, minWidth: 250 },
-        //   { name: 'country', header: 'Country', defaultFlex: 1, minWidth: 100 },
-        //   { name: 'city', header: 'City', defaultFlex: 1, minWidth: 300 },
-        //   { name: 'age', header: 'Age', minWidth: 150, type: 'number' }]
+  
 
 
-      
-          
-          const dataSourceExample = [
-            { id: 1, service: 'John McQueen', cost: 35 },
-            { id: 2, service: 'Mary Stones', cost: 25 },
-            { id: 3, service: 'Robert Fil', cost: 27 },
-            { id: 4, name: 'Roger Robson', cost: 81 },
-            { id: 5, name: 'Billary Konwik', cost: 18 },
-            { id: 6, name: 'Bob Martin', cost: 18 },
-            { id: 7, name: 'Matthew Richardson', cost: 54 },
-            { id: 8, name: 'Ritchie Peterson', cost: 54 },
-            { id: 9, name: 'Bryan Martin', cost: 40 },
-            { id: 10, name: 'Mark Martin', age: 44 },
-            { id: 11, name: 'Michelle Sebastian', age: 24 },
-            { id: 12, name: 'Michelle Sullivan', age: 61 },
-            { id: 13, name: 'Jordan Bike', age: 16 },
-            { id: 14, name: 'Nelson Ford', age: 34 },
-            { id: 15, name: 'Tim Cheap', age: 3 },
-            { id: 16, name: 'Robert Carlson', age: 31 },
-            { id: 17, name: 'Johny Perterson', age: 40 }
-          ]
-        
 
-          const {cardUsageAccount,status} = useSelector( state => state.costing )
+          const {cardUsageAccount,status,dataDistribution,dataDashbord} = useSelector( state => state.costing )
+
+
           const dispatch = useDispatch();
 
           const [seleccionado, setSeleccionado] = useState(cardUsageAccount[0].accountName || '');
+          //con esto me guardo en este estado el id de la cuenta la cual esta seleecionado en el dropdown
+          const [accountId,setAccountId] = useState(cardUsageAccount[0].accountId || 0)
 
-          const seleccionarOpcion = (opcion,accountId)=>{
-            console.log(accountId)
-            setSeleccionado(opcion)
-           
-            const body = {
-                tenantId: 1,
-                accountId:accountId
-              };
+          let formattedDate = moment(dataDashbord.lastUpdate).format('MMM DD YYYY HH:mm z');
+
+          useEffect(()=>{
+            seleccionarOpcion(cardUsageAccount[0].accountName,cardUsageAccount[0].accountId)
+          },[])
+
           
-            //   dispatch(getDataforDashbords(body))
+          let columnsData=dataDistribution.columns
+          let columnWithId=dataDistribution.columnsWithId
+
+          let columns = []
+
+
+          if (columnsData!== undefined){
+  
+          columns = [
+            { name: 'service', header: 'Service', minWidth: 50, defaultFlex: 2, editable: false },
+            { name: 'cost', header: 'Cost', maxWidth: 1000, defaultFlex: 1, type: 'number', editable: false },
+            ...columnsData.map(column => ({
+              name: column,
+              header: column,
+              maxWidth: 1000,
+              defaultFlex: 1,
+              type: 'number',
+              editable: true
+            })),
+            {
+              name: 'total',
+              header: 'Total',
+              maxWidth: 1000,
+              defaultFlex: 1,
+              type: 'number',
+              editable: false,
+              renderCell: ({ data }) => {
+                const total = data.reduce((acc, row) => {
+                  return acc + Object.keys(row).reduce((acc2, key) => {
+                    if (columnsData.includes(key)) {
+                      return acc2 + row[key];
+                    }
+                    return acc2;
+                  }, 0);
+                }, 0);
+                return <div>{total}</div>;
+              }
+            }
+          ];
         }
+  
 
 
+
+const seleccionarOpcion = (opcion,accountId)=>{
+            
+  setSeleccionado(opcion)
+  setAccountId(accountId)
+  const body = {
+      tenantId: 1,
+      accountId:accountId
+    };
+
+  dispatch(getDataforDistribution(body))
+
+  if(dataDistribution.data !== undefined){
+
+    const dataGrouped = dataDistribution.data.reduce((acc, item) => {
+      // Crear un objeto para el servicio si todavía no existe
+      if (!acc[item.service]) {
+        acc[item.service] = { service: item.service, cost: item.cost, id: item.idHiredService};
+        dataDistribution.columns.forEach(column => {
+          acc[item.service][column] = 0;
+        });
+      }
+      // Agregar la dimensión y el resultado al objeto del servicio correspondiente
+      acc[item.service][item.dimensionDescription] = item.resultAmount;
+
+      return acc;
+    }, {});
+
+    let index=0
+    const dataRows = Object.keys(dataGrouped).map(key => {
+      
+      const serviceData = dataGrouped[key];
+      let total = 0;
+      dataDistribution.columns.forEach(column => {
+        total += serviceData[column];
+      });
+      let dataRow = {
+        id:index,
+        idHiredService: serviceData.id,
+        service: serviceData.service,
+        cost: serviceData.cost,
+        total: total,
+      };
+      index+=1
+      dataDistribution.columns.forEach(column => {
+        dataRow[column] = serviceData[column];
+      });
+      return dataRow;
+    });
+
+    setDataSource(dataRows);
+  }
+  else{
+    console.log('nop')
+  }
+}
+
+       
 
 
         const [dataSource, setDataSource] = useState(dataSourceExample);
@@ -129,18 +220,83 @@ const DistributionTable = (props)=>{
         const onEditComplete = useCallback(({ value, columnId, rowId }) => {
         const data = [...dataSource];
         data[rowId][columnId] = value;
+        setDataSource(data);
+        data[rowId]['total']=0
+        columnsData.map(key=>{
+          data[rowId]['total']+= parseFloat(data[rowId][key])
+        })
+        setDataSource(data)
+        console.log(data)
+        }, [dataSource])
 
-    setDataSource(data);
-  }, [dataSource])
+
+
+        //funcion con la que se guarda o actualiza la info en la bd sobre el tablero
+        const saveData = ()=>{
+          let results=transformData(dataSource,columnWithId)
+          const body = {
+            tenantId: 1,
+            accountId:accountId,
+            data: results
+          };
+          dispatch(setDataforDistribution(body))
+          
+         
+        }
+
+
+
+
+        function transformData(data, centroIndices) {
+          // Inicializar el array de resultados
+          const results = [];
+        
+          // Recorrer los datos y crear los objetos con el formato deseado
+          for (let i = 0; i < data.length; i++) {
+            const item = data[i];
+            let keys = Object.keys(item);
+            let indices = Object.keys(centroIndices);
+            // console.log(keys[0]) 
+            // console.log(indices[0])
+
+            for (let i = 0; i < keys.length; i++) {
+              for(let z=0 ; z<indices.length; z++){
+                if(keys[i]===indices[z]){
+                // console.log(keys[i]);
+                // console.log(indices[z])
+                // console.log(item[indices[z]])
+                const newObject = {
+                  dimensionDescription: indices[z],
+                  idDistributionDimension:centroIndices[indices[z]],
+                  idHiredService: item.idHiredService,
+                  resultAmount:parseFloat(item[indices[z]]),
+                  // service: item.service,
+                };
+                results.push(newObject);
+
+              }
+
+            }
+          }
+
+           }
+        
+          return results;
+        }
+        
     return(
     <>  
-     <Row>
+     <Row className='mt-5'>
             <Col md="12" >
 
                 
-         <div className='mt-5'>
-            <div className="flex-wrap card-header d-flex justify-content-between mb-3">
+         <div className='grid-container mt-5'>
+            <div className="card-header d-flex justify-content-between mb-3">
+             <div> 
             <h3>Distribution</h3>
+            <h6>{dataDistribution.date}</h6>
+            </div>
+            <Button type="button" onClick={()=>saveData()} variant="outline-primary">Save</Button>
 
                 <Dropdown>
                     <Dropdown.Toggle as={Button} href="#" variant=" text-secondary" id="dropdownMenuButton3" aria-expanded="false">
@@ -154,20 +310,21 @@ const DistributionTable = (props)=>{
                     ))}
                     </Dropdown.Menu>
                 </Dropdown>
-
+              
+                
 
             
             </div>
             <ReactDataGrid
               idProperty="id"
-              style={gridStyle}
+              style={{ minHeight: height }}
               onEditComplete={onEditComplete}
               editable={true}
               columns={columns}
               dataSource={dataSource}
             />
     </div>
-
+    
     </Col>
     </Row>
     </>
@@ -175,5 +332,7 @@ const DistributionTable = (props)=>{
 
     )
 };
-
 export default connect(mapStateToProps, mapDispatchToProps)(DistributionTable)
+
+
+
