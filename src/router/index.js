@@ -18,9 +18,10 @@ const IndexRouters = () => {
     return (
         <>
             <Switch>
-                <Route exact path="/" component={Index}></Route>
+                {/* <Route exact path="/" component={Index}></Route> */}
+                {/* <Route  path="/cloudcosting" component={DefaultCosting}></Route> */}
+                <Route  path="/" component={DefaultCosting}></Route>
                 <Route  path="/dashboard" component={Default}></Route>
-                <Route  path="/cloudcosting" component={DefaultCosting}></Route>
                 <Route  path="/boxed" component={Boxed}></Route>
                 <Route  path="/horizontal" component={Horizontal}></Route>
                 <Route  path="/dual-horizontal" component={DualHorizontal}></Route>

@@ -21,7 +21,9 @@ const CostingRouter = () => {
                     {/* agrego rutas de cloud costing */}
 
 
-                    <Route path="/cloudcosting" exact component={Principal} />
+                    {/* <Route path="/cloudcosting" exact component={Principal} /> */}
+                    <Route path="/" exact component={Principal} />
+
                     
                     <Route path="/cloudcosting/accounts" exact component={Accounts} />
 
