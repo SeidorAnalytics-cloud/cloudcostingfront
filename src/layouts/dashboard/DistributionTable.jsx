@@ -62,6 +62,43 @@ const mapDispatchToProps = dispatch => ({
 })
 
 
+function transformData(data, centroIndices) {
+  // Inicializar el array de resultados
+  const results = [];
+
+  // Recorrer los datos y crear los objetos con el formato deseado
+  for (let i = 0; i < data.length; i++) {
+    const item = data[i];
+    let keys = Object.keys(item);
+    let indices = Object.keys(centroIndices);
+    // console.log(keys[0]) 
+    // console.log(indices[0])
+
+    for (let i = 0; i < keys.length; i++) {
+      for(let z=0 ; z<indices.length; z++){
+        if(keys[i]===indices[z]){
+
+        const newObject = {
+          dimensionDescription: indices[z],
+          idDistributionDimension:centroIndices[indices[z]],
+          idHiredService: item.idHiredService,
+          resultAmount:parseFloat(item[indices[z]]),
+          // service: item.service,
+        };
+        results.push(newObject);
+
+      }
+
+    }
+  }
+
+   }
+
+  return results;
+}
+
+
+
 
 
 
@@ -107,8 +144,22 @@ const DistributionTable = ()=>{
 
           let formattedDate = moment(dataDashbord.lastUpdate).format('MMM DD YYYY HH:mm z');
 
+          const [months, setMonths] = useState([]);
+
+          const [monthToDb , setmonthToDb] = useState()
+          
+          
+          useEffect(() => {
+            getLast13Months()
+        
+          }, [])
+          
+
+
+
           useEffect(()=>{
             seleccionarOpcion(cardUsageAccount[0].accountName,cardUsageAccount[0].accountId)
+            
           },[])
 
           
@@ -162,7 +213,8 @@ const seleccionarOpcion = (opcion,accountId)=>{
   setAccountId(accountId)
   const body = {
       tenantId: 1,
-      accountId:accountId
+      accountId:accountId,
+      month:monthToDb+'-01'
     };
 
   dispatch(getDataforDistribution(body))
@@ -226,7 +278,6 @@ const seleccionarOpcion = (opcion,accountId)=>{
           data[rowId]['total']+= parseFloat(data[rowId][key])
         })
         setDataSource(data)
-        console.log(data)
         }, [dataSource])
 
 
@@ -237,7 +288,8 @@ const seleccionarOpcion = (opcion,accountId)=>{
           const body = {
             tenantId: 1,
             accountId:accountId,
-            data: results
+            data: results,
+            month:monthToDb+'-01'
           };
           dispatch(setDataforDistribution(body))
           
@@ -245,44 +297,36 @@ const seleccionarOpcion = (opcion,accountId)=>{
         }
 
 
-
-
-        function transformData(data, centroIndices) {
-          // Inicializar el array de resultados
-          const results = [];
-        
-          // Recorrer los datos y crear los objetos con el formato deseado
-          for (let i = 0; i < data.length; i++) {
-            const item = data[i];
-            let keys = Object.keys(item);
-            let indices = Object.keys(centroIndices);
-            // console.log(keys[0]) 
-            // console.log(indices[0])
-
-            for (let i = 0; i < keys.length; i++) {
-              for(let z=0 ; z<indices.length; z++){
-                if(keys[i]===indices[z]){
-                // console.log(keys[i]);
-                // console.log(indices[z])
-                // console.log(item[indices[z]])
-                const newObject = {
-                  dimensionDescription: indices[z],
-                  idDistributionDimension:centroIndices[indices[z]],
-                  idHiredService: item.idHiredService,
-                  resultAmount:parseFloat(item[indices[z]]),
-                  // service: item.service,
-                };
-                results.push(newObject);
-
-              }
-
-            }
+        function getLast13Months() {
+          const today = new Date();
+          const months = [];
+          for (let i = 0; i < 13; i++) {
+            const month = new Date(today.getFullYear(), today.getMonth() - i, 1);
+            const year = month.getFullYear();
+            const monthNumber = month.getMonth() + 1;
+            const monthString = monthNumber < 10 ? `0${monthNumber}` : `${monthNumber}`;
+            // const dateString = `${year}-${monthString}-01`;
+            const dateString = `${year}-${monthString}`;
+            months.push(dateString);
           }
-
-           }
-        
-          return results;
+          setMonths(months)
+          setmonthToDb(months[0])
         }
+
+        const changeDate = (month)=>{
+          setmonthToDb(month)
+          seleccionarOpcion(seleccionado,accountId)
+        }
+//==================================================================================================================================
+
+
+
+const [cellSelection, setCellSelection] = useState({"2,name": true, "2,city": true});
+
+
+
+
+
         
     return(
     <>  
@@ -294,7 +338,20 @@ const seleccionarOpcion = (opcion,accountId)=>{
             <div className="card-header d-flex justify-content-between mb-3">
              <div> 
             <h3>Distribution</h3>
-            <h6>{dataDistribution.date}</h6>
+            <Dropdown>
+                    <Dropdown.Toggle as={Button} href="#" variant=" text-secondary" id="dropdownMenuButton3" aria-expanded="false">
+                    {monthToDb}
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu className="dropdown-menu-end" aria-labelledby="dropdownMenuButton3">
+                    {months.map((opcion, indice) => (
+                        <li className="card-title" key={indice}>
+                        <Dropdown.Item onClick={()=>{changeDate(opcion)}}  href="#">{opcion}</Dropdown.Item>
+                      </li>
+                    ))}
+                    </Dropdown.Menu>
+                </Dropdown>
+
+
             </div>
             <Button type="button" onClick={()=>saveData()} variant="outline-primary">Save</Button>
 
@@ -322,6 +379,10 @@ const seleccionarOpcion = (opcion,accountId)=>{
               editable={true}
               columns={columns}
               dataSource={dataSource}
+              cellSelection={cellSelection}
+              onCellSelectionChange={setCellSelection}
+              sortColumn="service"
+              sortDirection="ASC"
             />
     </div>
     

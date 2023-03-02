@@ -275,7 +275,6 @@ const DashbordCosting = (props)=>{
              let formattedDate = moment(dataDashbord.lastUpdate).format('MMM DD YYYY HH:mm z');
 
              let dataMonths = dataDashbord.months || [];
-           
              
               let chart3 = {
                 options: {
