@@ -1,0 +1,7 @@
+version: '3.5'
+
+services:
+  app:
+    image: cloudseidoranalytics/cloudcostingfront:v0.0.0
+    ports:
+      - 3000:3000
